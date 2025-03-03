@@ -1,6 +1,6 @@
 import { BaseEntity } from "../../../utilities/base.entity";
 
-export class Product extends BaseEntity{
+export class ProductEntity extends BaseEntity{
     sku: string;
     productName: string;
     quantity: number;

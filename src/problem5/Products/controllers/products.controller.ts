@@ -2,7 +2,7 @@ import { ReasonPhrases, StatusCodes } from "http-status-codes";
 
 import { IProductService } from "../services/products.service";
 import { sendSuccessReponse, errorHandlers } from "../../../utilities/helper";
-import { Product } from "../entities/products.entity";
+import { ProductEntity } from "../entities/products.entity";
 
 export default class ProductController {
   constructor(private productService: IProductService) {
@@ -13,7 +13,7 @@ export default class ProductController {
     try {
       const productEntity = req.body;
       productEntity.destroy = false;
-      let result: Product = await this.productService.createProduct(
+      let result: ProductEntity = await this.productService.createProduct(
         productEntity
       );
       sendSuccessReponse(
@@ -33,7 +33,7 @@ export default class ProductController {
   getProductDetail = async (req: any, res: any) => {
     try {
       const { sku } = req.query;
-      let result: Product = await this.productService.getProductDetail(
+      let result: ProductEntity = await this.productService.getProductDetail(
         sku
       );
       sendSuccessReponse(
@@ -54,7 +54,7 @@ export default class ProductController {
     try {
       const filter = req.query;
       
-      let result: Product[] = await this.productService.getListProducts(
+      let result: ProductEntity[] = await this.productService.getListProducts(
         filter
       );
       sendSuccessReponse(
@@ -75,7 +75,7 @@ export default class ProductController {
     try {
       const { id } = req.params;
       const productEntity = req.body;
-      let result: Product = await this.productService.updateProduct(
+      let result: ProductEntity = await this.productService.updateProduct(
         id,
         productEntity
       );
