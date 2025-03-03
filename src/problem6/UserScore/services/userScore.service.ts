@@ -65,7 +65,6 @@ export default class UserScoreService implements IUserScoreService {
               `Version userScore of ${entity.userId} mismatch! Please refresh and try again.`
             );
           }
-          // Update to mongoDB
           const updatedUserScore = await this.repo
             .findOneAndUpdate(
               { userId: new ObjectId(entity.userId) },
@@ -74,7 +73,6 @@ export default class UserScoreService implements IUserScoreService {
             )
             .lean();
 
-          // Update to Redis
           await this.redisClient.zadd(
             "leaderboard",
             Number(entity.score) || 0,
