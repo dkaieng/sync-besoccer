@@ -14,9 +14,5 @@ const userController = new UserController(userService)
 router.post("/login", Validator(UserValidation.login), userController.login)
 router.post("/user", Validator(UserValidation.createUser), userController.createUser)
 router.get("/user/top-ten", authenticateToken, userController.getTopTenUsers)
-// router.get("/product", productController.getProductDetail)
-// router.get("/products", productController.getListProducts)
-// router.put("/product/:id", Validator(ProductValidation.updateProduct), productController.updateProduct)
-// router.delete("/product/:id", productController.deleteProduct)
 
 export default router

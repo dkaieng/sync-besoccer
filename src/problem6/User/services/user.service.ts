@@ -73,19 +73,6 @@ export default class UserService implements IUserService {
         `${String(newUserData._id)}:${String(entity.nickName)}`
       )
     ])
-    // await this.repoUserScore.create({
-    //   userId: newUserData._id,
-    //   score: 0,
-    //   ...pick(newUserData, ["nickName"]),
-    //   ...pick(entity, ["destroy", "createdBy", "updatedBy"]),
-    // });
-
-    // await this.redisClient.zadd(
-    //   "leaderboard",
-    //   0,
-    //   `${String(newUserData._id)}:${String(entity.nickName)}`
-    // );
-
     return newUserData;
   }
 
