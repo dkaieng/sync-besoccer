@@ -3,17 +3,18 @@ import {
   baseSchemaOptions,
 } from "../../../utilities/base.schema";
 import { COLLECTIONS_CONSTANT } from "../../../utilities/collections.constant";
-import { Product } from "../entities/products.entity";
+import { ProductEntity } from "../entities/products.entity";
 import mongoose, { Schema } from "mongoose";
 
-const { PRODUCT_COLLECTION_NAME } = COLLECTIONS_CONSTANT;
+const { PRODUCT_COLLECTION_NAME, PRODUCT_REPOSITORY_NAME } = COLLECTIONS_CONSTANT;
 
-export const ProductSchema = new Schema<Product & Document>(
+export const ProductSchema = new Schema<ProductEntity & Document>(
   {
     sku: {
       type: String,
       unique: true,
-      required: true
+      required: true,
+      index: true
     },
     productName: {
       type: String,
@@ -30,7 +31,8 @@ export const ProductSchema = new Schema<Product & Document>(
 
 
 
-export const ProductRepository = mongoose.connection.model<Product & Document>(
-  PRODUCT_COLLECTION_NAME,
-  ProductSchema
+export const ProductRepository = mongoose.connection.model<ProductEntity & Document>(
+  PRODUCT_REPOSITORY_NAME,
+  ProductSchema,
+  PRODUCT_COLLECTION_NAME
 );

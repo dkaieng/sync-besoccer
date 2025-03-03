@@ -1,4 +1,4 @@
-const n = 10
+const n = 1000
 // Implementation A: Iterative Approach
 function sum_to_n_a(n: number): number {
     let sum = 0;
