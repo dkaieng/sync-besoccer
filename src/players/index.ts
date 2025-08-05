@@ -2,15 +2,15 @@ import bodyParser from 'body-parser'
 import express from 'express'
 import cors from 'cors'
 
-import productRouter from './Router/product'
+import playerRouter from '../router/router'
 import "./connect"
 
 const app = express()
-const PORT = process.env.PORT_PROBLEM5 || 3000
+const PORT = process.env.PORT_PLAYERS || 1000
 
 app.use(cors())
 app.use(bodyParser.json())
-app.use("/v1", productRouter)
+app.use("/api/v1", playerRouter)
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`)

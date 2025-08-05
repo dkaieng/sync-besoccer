@@ -3,12 +3,8 @@ type CollectionsConstantType = {
 };
 
 export const COLLECTIONS_CONSTANT: CollectionsConstantType = {
-	PRODUCT_COLLECTION_NAME: 'Products',
-    PRODUCT_REPOSITORY_NAME: 'Product',
-    USER_COLLECTION_NAME: 'Users',
-    USER_REPOSITORY_NAME: 'User',
-    USER_SCORE_COLLECTION_NAME: 'UserScores',
-    USER_SCORE_REPOSITORY_NAME: 'UserScore',
-    CONFIG_COLLECTION_NAME: 'Configs',
-    CONFIG_REPOSITORY_NAME: 'Config',
+	BESOCCER_MAPPING_PLAYERS_COLLECTION_NAME: 'besoccer_mapping_players',
+    BESOCCER_MAPPING_PLAYERS_REPOSITORY_NAME: 'MappingPlayer',
+    BESOCCER_PLAYERS_INJURIES_COLLECTION_NAME: 'besoccer_player_injuries',
+    BESOCCER_PLAYERS_INJURIES_REPOSITORY_NAME: 'PlayerInjuries',
 }

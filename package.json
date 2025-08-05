@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start4": "npx nodemon --exec npx ts-node src/problem4/index.ts",
-    "start5": "npx nodemon --exec npx ts-node src/problem5/index.ts",
-    "start6": "npx nodemon --exec npx ts-node src/problem6/index.ts"
+    "players": "npx nodemon --exec npx ts-node src/players/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -23,10 +21,11 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
+    "axios": "^1.11.0",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.6.1",
     "express": "^4.21.2",
     "http-status-codes": "^2.3.0",
     "ioredis": "^5.5.0",
