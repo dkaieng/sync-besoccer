@@ -11,6 +11,7 @@ import PlayersController from '../players/controllers/players.controller'
 import { createPlayersInjuriesRepository } from '../players/repositories/playerInjuries.repository';
 import { createMappingPlayersRepository } from '../players/repositories/mappingPlayers.repository';
 import { conn1, conn2 } from '../players/connect';
+import { createPlayersCareersRepository } from '../players/repositories/playerCareers.repository';
 
 const router = express.Router()
 
@@ -26,9 +27,21 @@ export const MappingPlayersRepositoryDev = createMappingPlayersRepository(conn1)
 export const PlayersInjuriesRepositoryStaging = createPlayersInjuriesRepository(conn2); // Repository cho injuries for staging
 export const MappingPlayersRepositoryStaging = createMappingPlayersRepository(conn2); // Repository cho mapping for staging
 
-const playerService = new PlayersService(PlayersInjuriesRepositoryDev, MappingPlayersRepositoryDev, PlayersInjuriesRepositoryStaging, MappingPlayersRepositoryStaging)
+export const PlayersCareersRepositoryDev = createPlayersCareersRepository(conn1)
+export const PlayersCareersRepositoryStaging = createPlayersCareersRepository(conn2)
+
+const playerService = new PlayersService(
+    PlayersInjuriesRepositoryDev, 
+    MappingPlayersRepositoryDev, 
+    PlayersInjuriesRepositoryStaging,
+    MappingPlayersRepositoryStaging,
+    PlayersCareersRepositoryDev,
+    PlayersCareersRepositoryStaging
+)
 const playerController = new PlayersController(playerService)
 router.get("/football/player-type-besoccer", playerController.getInjuryTypes)
-router.post("/football/player-sync-besoccer", playerController.syncInjuryPlayer)
+router.post("/football/player-sync-besoccer-injury", playerController.syncInjuryPlayer)
+router.post("/football/player-sync-besoccer-career", playerController.syncCareerPlayer)
+
 
 export default router

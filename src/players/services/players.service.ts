@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { MappingPlayersRepositoryDev, MappingPlayersRepositoryStaging, PlayersInjuriesRepositoryDev, PlayersInjuriesRepositoryStaging } from '../../router/router';
+import { MappingPlayersRepositoryDev, MappingPlayersRepositoryStaging, PlayersCareersRepositoryDev, PlayersCareersRepositoryStaging, PlayersInjuriesRepositoryDev, PlayersInjuriesRepositoryStaging } from '../../router/router';
 
 //--------------------------Connect 1 database------------------------------------
 // import { PlayersInjuriesRepository } from '../repositories/playerInjuries.repository';
@@ -11,6 +11,7 @@ import { MappingPlayersRepositoryDev, MappingPlayersRepositoryStaging, PlayersIn
 export interface IPlayersService {
     getInjuryTypes(start: number, end: number): Promise<any>
     syncInjuryPlayer(playerBeId: string, playerTSId: string): Promise<any>
+    syncCareerPlayer(playerBeId: string, playerTSId: string): Promise<any>
 }
 
 export default class PlayersService implements IPlayersService {
@@ -33,16 +34,25 @@ export default class PlayersService implements IPlayersService {
   repoPlayerInjuryStaging: typeof PlayersInjuriesRepositoryStaging;
   repoPlayerMappingStaging: typeof MappingPlayersRepositoryStaging;
 
+  repoPlayerCareerDev: typeof PlayersCareersRepositoryDev;
+  repoPlayerCareerStaging: typeof PlayersCareersRepositoryStaging;
+
   constructor(
     repoPlayerInjuryDev: typeof PlayersInjuriesRepositoryDev, 
     repoPlayerMappingDev: typeof MappingPlayersRepositoryDev,
     repoPlayerInjuryStaging: typeof PlayersInjuriesRepositoryStaging, 
     repoPlayerMappingStaging: typeof MappingPlayersRepositoryStaging,
+
+    repoPlayerCareerDev: typeof PlayersCareersRepositoryDev,
+    repoPlayerCareerStaging: typeof PlayersCareersRepositoryStaging
   ) {
     this.repoPlayerInjuryDev = repoPlayerInjuryDev
     this.repoPlayerMappingDev = repoPlayerMappingDev
     this.repoPlayerInjuryStaging = repoPlayerInjuryStaging
     this.repoPlayerMappingStaging = repoPlayerMappingStaging
+
+    this.repoPlayerCareerDev = repoPlayerCareerDev
+    this.repoPlayerCareerStaging = repoPlayerCareerStaging
   }
 
   async getInjuryTypes(start: number, end: number): Promise<any> {
@@ -85,6 +95,19 @@ export default class PlayersService implements IPlayersService {
       ])
     }
     
+    return true
+  }
+
+  async syncCareerPlayer(playerBeId: string, playerTSId: string): Promise<any> {
+    const response = await axios.get(`https://fast.besoccer.com/scripts/api/api.php?req=player_teams_path_st&format=json&key=825300886e6465fc5721a9ddbad0939a&lang=en&site=ResultadosAndroid&id=${playerBeId}`);
+    if (response?.data?.clubs?.length || response?.data?.national_teams?.length || response?.data?.career_summary?.length) {
+      const result = await Promise.allSettled([
+        this.repoPlayerCareerDev.findOneAndUpdate({ player_id: playerBeId },{ player_id: playerBeId, player_team_career: response?.data?.clubs, player_national_career: response?.data?.national_teams, player_summary_career: response?.data?.career_summary  }, { new: true, upsert: true }),
+        this.repoPlayerMappingDev.findOneAndUpdate({ player_id: playerBeId }, { player_id: playerBeId, thesport_id: playerTSId }, { new: true, upsert: true }),
+        this.repoPlayerCareerStaging.findOneAndUpdate({ player_id: playerBeId },{ player_id: playerBeId, player_team_career: response?.data?.clubs, player_national_career: response?.data?.national_teams, player_summary_career: response?.data?.career_summary  }, { new: true, upsert: true }),
+        this.repoPlayerMappingStaging.findOneAndUpdate({ player_id: playerBeId }, { player_id: playerBeId, thesport_id: playerTSId }, { new: true, upsert: true }),
+      ])
+    }
     return true
   }
 }

@@ -46,6 +46,27 @@ export default class PlayersController {
     }
   };
 
+  syncCareerPlayer = async (req: any, res: any) => {
+    try {
+      const { playerBeId, playerTSId } = req.body;
+      let result: any = await this.playersService.syncCareerPlayer(
+        playerBeId,
+        playerTSId
+      );
+      sendSuccessReponse(
+        {
+          success: true,
+          statusCodes: StatusCodes.OK,
+          message: ReasonPhrases.OK,
+          data: result,
+        },
+        res
+      );
+    } catch (err) {
+      errorHandlers(err, res)
+    }
+  };
+
 //   createProduct = async (req: any, res: any) => {
 //     try {
 //       const productEntity = req.body;
