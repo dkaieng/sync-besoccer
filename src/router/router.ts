@@ -3,6 +3,8 @@ import express from 'express'
 
 import PlayersService from '../players/services/players.service'
 import PlayersController from '../players/controllers/players.controller'
+
+import CoachesController from '../coaches/controllers/coaches.controller';
 //--------------------------Connect 1 database-----------------------------
 // import { PlayersInjuriesRepository } from '../players/repositories/playerInjuries.repository'
 // import { MappingPlayersRepository } from '../players/repositories/mappingPlayers.repository'
@@ -10,11 +12,17 @@ import PlayersController from '../players/controllers/players.controller'
 //--------------------------Connect multiple database-----------------------------
 import { createPlayersInjuriesRepository } from '../players/repositories/playerInjuries.repository';
 import { createMappingPlayersRepository } from '../players/repositories/mappingPlayers.repository';
-import { conn1, conn2 } from '../players/connect';
 import { createPlayersCareersRepository } from '../players/repositories/playerCareers.repository';
+import { conn1, conn2 } from '../players/connect';
 
-const router = express.Router()
+import { createH2HCoachesRepository } from '../coaches/repository/h2hCoach.repository';
+import { pgPool } from '../coaches/connect';
+import CoachesService from '../coaches/services/coaches.service';
 
+
+// Tạo các router riêng biệt
+const playerRouter = express.Router();
+const coachRouter = express.Router();
 
 //--------------------------Connect 1 database------------------------------------
 // const playerService = new PlayersService(PlayersInjuriesRepository, MappingPlayersRepository)
@@ -39,9 +47,19 @@ const playerService = new PlayersService(
     PlayersCareersRepositoryStaging
 )
 const playerController = new PlayersController(playerService)
-router.get("/football/player-type-besoccer", playerController.getInjuryTypes)
-router.post("/football/player-sync-besoccer-injury", playerController.syncInjuryPlayer)
-router.post("/football/player-sync-besoccer-career", playerController.syncCareerPlayer)
 
+export const CoachesH2H = createH2HCoachesRepository(pgPool)
 
-export default router
+const coachService = new CoachesService(
+    CoachesH2H, 
+)
+
+const coachController = new CoachesController(coachService)
+
+playerRouter.get("/football/player-type-besoccer", playerController.getInjuryTypes)
+playerRouter.post("/football/player-sync-besoccer-injury", playerController.syncInjuryPlayer)
+playerRouter.post("/football/player-sync-besoccer-career", playerController.syncCareerPlayer)
+
+coachRouter.get("/football/coach-sync-h2h", coachController.syncDataH2HCoaches)
+
+export { playerRouter, coachRouter };
