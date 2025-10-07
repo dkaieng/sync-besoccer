@@ -14,7 +14,7 @@ export default class CoachesService implements ICoachesService {
   async syncDataH2HCoaches(start: number, end: number): Promise<any> {
     try {
       const batchSize = end - start + 1;
-      console.log(batchSize,"===batchSize")
+      console.log(batchSize, "===batchSize");
       const query = `
         SELECT 
           t.id,
@@ -25,44 +25,44 @@ export default class CoachesService implements ICoachesService {
           t.away_team_id,
           CASE
             WHEN COALESCE((t.sport_event_status->'home_score'->>'regular_score')::int, 0) +
-                 COALESCE((t.sport_event_status->'home_score'->>'overTime_score')::int, 0) +
-                 COALESCE((t.sport_event_status->'home_score'->>'penalty_score')::int, 0) >
-                 COALESCE((t.sport_event_status->'away_score'->>'regular_score')::int, 0) +
-                 COALESCE((t.sport_event_status->'away_score'->>'overTime_score')::int, 0) +
-                 COALESCE((t.sport_event_status->'away_score'->>'penalty_score')::int, 0)
+                  COALESCE((t.sport_event_status->'home_score'->>'overTime_score')::int, 0) +
+                  COALESCE((t.sport_event_status->'home_score'->>'penalty_score')::int, 0) >
+                  COALESCE((t.sport_event_status->'away_score'->>'regular_score')::int, 0) +
+                  COALESCE((t.sport_event_status->'away_score'->>'overTime_score')::int, 0) +
+                  COALESCE((t.sport_event_status->'away_score'->>'penalty_score')::int, 0)
               THEN 'home'
             WHEN COALESCE((t.sport_event_status->'home_score'->>'regular_score')::int, 0) +
-                 COALESCE((t.sport_event_status->'home_score'->>'overTime_score')::int, 0) +
-                 COALESCE((t.sport_event_status->'home_score'->>'penalty_score')::int, 0) <
-                 COALESCE((t.sport_event_status->'away_score'->>'regular_score')::int, 0) +
-                 COALESCE((t.sport_event_status->'away_score'->>'overTime_score')::int, 0) +
-                 COALESCE((t.sport_event_status->'away_score'->>'penalty_score')::int, 0)
+                  COALESCE((t.sport_event_status->'home_score'->>'overTime_score')::int, 0) +
+                  COALESCE((t.sport_event_status->'home_score'->>'penalty_score')::int, 0) <
+                  COALESCE((t.sport_event_status->'away_score'->>'regular_score')::int, 0) +
+                  COALESCE((t.sport_event_status->'away_score'->>'overTime_score')::int, 0) +
+                  COALESCE((t.sport_event_status->'away_score'->>'penalty_score')::int, 0)
               THEN 'away'
             ELSE 'draw'
           END AS result_event,
           (SELECT ccr.coach_id 
-           FROM public.coach_coaching_resumes ccr 
-           WHERE ccr.team_id = t.home_team_id 
-           AND ccr.position = 1
-           AND t.start_timestamp >= ccr.joined 
-           AND (ccr.contract_until IS NULL OR ccr.contract_until = 0 OR t.start_timestamp <= ccr.contract_until)
-           ORDER BY ccr.joined DESC
-           LIMIT 1) AS home_coach_id,
+            FROM public.coach_coaching_resumes ccr 
+            WHERE ccr.team_id = t.home_team_id 
+            AND ccr.position = 1
+            AND t.start_timestamp >= ccr.joined 
+            AND (ccr.contract_until IS NULL OR ccr.contract_until = 0 OR t.start_timestamp <= ccr.contract_until)
+            ORDER BY ccr.joined DESC
+            LIMIT 1) AS home_coach_id,
           (SELECT ccr.coach_id 
-           FROM public.coach_coaching_resumes ccr 
-           WHERE ccr.team_id = t.away_team_id 
-           AND ccr.position = 1
-           AND t.start_timestamp >= ccr.joined 
-           AND (ccr.contract_until IS NULL OR ccr.contract_until = 0 OR t.start_timestamp <= ccr.contract_until)
-           ORDER BY ccr.joined DESC
-           LIMIT 1) AS away_coach_id
+            FROM public.coach_coaching_resumes ccr 
+            WHERE ccr.team_id = t.away_team_id 
+            AND ccr.position = 1
+            AND t.start_timestamp >= ccr.joined 
+            AND (ccr.contract_until IS NULL OR ccr.contract_until = 0 OR t.start_timestamp <= ccr.contract_until)
+            ORDER BY ccr.joined DESC
+            LIMIT 1) AS away_coach_id
         FROM public.sport_events AS t
         ORDER BY t.id
         OFFSET $1 LIMIT $2;
-      `
+      `;
       const { rows } = await this.pgPool.query(query, [start, batchSize]);
       console.log(`Fetched ${rows.length} rows for batch ${start} to ${end}`);
-      console.log(rows,"===rows")
+      console.log(rows, "===rows");
       
       // Map and insert each valid record into h2h_coaches
       let insertedCount = 0;
@@ -76,24 +76,22 @@ export default class CoachesService implements ICoachesService {
         }
 
         const insertQuery = `
-          INSERT INTO public.h2h_coaches (
+          INSERT INTO h2h_coaches (
             sport_event_id,
             home_coach_id,
             away_coach_id,
-            home_coach_win,
-            draw,
-            away_coach_win
-          ) VALUES ($1, $2, $3, $4, $5, $6)
+            winner_code
+          ) VALUES ($1, $2, $3, $4)
           ON CONFLICT (sport_event_id) DO NOTHING;
         `;
+
+        const winnerCode = row.result_event === 'home' ? 1 : row.result_event === 'away' ? 2 : 3;
 
         const values = [
           row.id,
           row.home_coach_id,
           row.away_coach_id,
-          row.result_event === 'home',
-          row.result_event === 'draw',
-          row.result_event === 'away',
+          winnerCode
         ];
 
         await this.pgPool.query(insertQuery, values);

@@ -16,9 +16,7 @@ export const H2HCoachesSchema = `
     sport_event_id VARCHAR(255) PRIMARY KEY,
     home_coach_id VARCHAR(255) NOT NULL,
     away_coach_id VARCHAR(255) NOT NULL,
-    home_coach_win BOOLEAN DEFAULT FALSE,
-    draw BOOLEAN DEFAULT FALSE,
-    away_coach_win BOOLEAN DEFAULT FALSE
+    winner_code VARCHAR(255) NOT NULL
   );
 `;
 
