@@ -9,10 +9,7 @@ export default class CoachesController {
 
   syncDataH2HCoaches = async (req: any, res: any) => {
     try {
-      const { start, end } = req.query;
-      console.log(start,"===start")
-      console.log(end,"===end")
-      let result: any = await this.coachesService.syncDataH2HCoaches(start, end);
+      let result: any = await this.coachesService.syncDataH2HCoaches();
       sendSuccessReponse(
         {
           success: true,
