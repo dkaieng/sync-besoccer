@@ -5,9 +5,7 @@ export interface H2HCoachesEntity {
   sport_event_id: string;
   home_coach_id: string;
   away_coach_id: string;
-  home_coach_win: boolean;
-  draw: boolean;
-  away_coach_win: boolean;
+  winner_code: string;
 }
 
 // Định nghĩa schema cho bảng h2h_coaches
