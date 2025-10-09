@@ -104,7 +104,7 @@ export default class CoachesService implements ICoachesService {
             ON CONFLICT (sport_event_id) DO NOTHING;
           `;
 
-          const winnerCode = row.result_event === 'home' ? 1 : row.result_event === 'away' ? 2 : 3;
+          const winnerCode = row.result_event === 'home' ? '1' : row.result_event === 'away' ? '2' : '3';
 
           const values = [
             row.id,
