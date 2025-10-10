@@ -1,6 +1,7 @@
 import { Pool } from 'pg';
 
 export interface ICoachesService {
+    // Push data từ hiện tại cho đến quá khứ
     syncDataH2HCoaches(): Promise<any>
 }
 
@@ -81,7 +82,6 @@ export default class CoachesService implements ICoachesService {
         const { rows } = await this.pgPool.query(query, [offset, batchSize]);
 
         console.log(`Fetched ${rows.length} rows for batch ${i + 1} (offset ${offset})`);
-        console.log(rows, '===rows');
 
         let insertedCount = 0;
         let skippedCount = 0;

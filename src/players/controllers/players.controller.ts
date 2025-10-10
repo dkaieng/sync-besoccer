@@ -67,6 +67,23 @@ export default class PlayersController {
     }
   };
 
+  syncAverageRatingPlayer = async (req: any, res: any) => {
+    try {
+      let result: any = await this.playersService.syncDataAverageRating();
+      sendSuccessReponse(
+        {
+          success: true,
+          statusCodes: StatusCodes.OK,
+          message: ReasonPhrases.OK,
+          data: result,
+        },
+        res
+      );
+    } catch (err) {
+      errorHandlers(err, res)
+    }
+  };
+
 //   createProduct = async (req: any, res: any) => {
 //     try {
 //       const productEntity = req.body;
